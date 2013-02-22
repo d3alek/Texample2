@@ -25,8 +25,7 @@ public class SpriteBatch {
 	// D: prepare the sprite batcher for specified maximum number of sprites
 	// A: gl - the gl instance to use for rendering
 	//    maxSprites - the maximum allowed sprites per batch
-	public SpriteBatch(int maxSprites, int mvpMatricesHandle)  {
-		mMVPMatricesHandle = mvpMatricesHandle;
+	public SpriteBatch(int maxSprites, Program program)  {
 //		this.gl = gl;                                   // Save GL Instance
 		this.vertexBuffer = new float[maxSprites * VERTICES_PER_SPRITE * VERTEX_SIZE];  // Create Vertex Buffer
 		this.vertices = new Vertices(maxSprites * VERTICES_PER_SPRITE, maxSprites * INDICES_PER_SPRITE, false, true, false );  // Create Rendering Vertices
@@ -46,6 +45,7 @@ public class SpriteBatch {
 			indices[i + 5] = (short)( j + 0 );           // Calculate Index 5
 		}
 		vertices.setIndices( indices, 0, len );         // Set Index Buffer for Rendering
+        mMVPMatricesHandle = GLES20.glGetUniformLocation(program.getHandle(), "u_MVPMatrix");
 	}
 
 	//--Begin Batch--//
@@ -53,7 +53,7 @@ public class SpriteBatch {
 	//    NOTE: the overloaded (non-texture) version assumes that the texture is already bound!
 	// A: textureId - the ID of the texture to use for the batch
 	// R: [none]
-	public void beginBatch(int textureId, int textureUniformHandle)  {
+	public void beginBatch(int textureId, int textureUniformHandle, float[] vpMatrix)  {
 		//      gl.glBindTexture( GL10.GL_TEXTURE_2D, textureId );  // Bind the Texture
 		
 		// bind the texture
@@ -67,8 +67,7 @@ public class SpriteBatch {
 		GLES20.glUniform1i(textureUniformHandle, 0); 
 //		Log.v(TAG, "when finishing begining batch " + GLES20.glGetError());
 		
-		numSprites = 0;                                 // Empty Sprite Counter
-		bufferIndex = 0;                                // Reset Buffer Index (Empty)
+		beginBatch(vpMatrix);
 	}
 	public void beginBatch(float[] vpMatrix)  {
 		numSprites = 0;                                 // Empty Sprite Counter

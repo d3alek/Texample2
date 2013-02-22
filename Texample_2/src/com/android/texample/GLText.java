@@ -16,8 +16,6 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
-import android.util.Log;
-import com.android.texample_2.R;
 
 public class GLText {
 
@@ -32,11 +30,12 @@ public class GLText {
 	public final static int FONT_SIZE_MIN = 6;         // Minumum Font Size (Pixels)
 	public final static int FONT_SIZE_MAX = 180;       // Maximum Font Size (Pixels)
 
-	public final static int CHAR_BATCH_SIZE = 23;     // Number of Characters to Render Per Batch
+	public final static int CHAR_BATCH_SIZE = 24;     // Number of Characters to Render Per Batch
+													  // must be the same as the size of u_MVPMatrix 
+													  // in BatchTextProgram
 	private static final String TAG = "GLTEXT";
 
 	//--Members--//
-	//   GL10 gl;                                           // GL10 Instance
 	AssetManager assets;                               // Asset Manager
 	SpriteBatch batch;                                 // Batch Renderer
 
@@ -61,10 +60,7 @@ public class GLText {
 	float spaceX;                                      // Additional (X,Y Axis) Spacing (Unscaled)
 	private int mColorHandle;
 	private Program mProgram;
-//	private int mMVPMatrixHandle;
 	private int mTextureUniformHandle;
-//	private float[] mVPMatrix;
-	private int mMVPMatricesHandle;
 
 
 	//--Constructor--//
@@ -73,10 +69,8 @@ public class GLText {
 	public GLText(Program program, AssetManager assets) {
 		//      this.gl = gl;                                   // Save the GL10 Instance
 		this.assets = assets;                           // Save the Asset Manager Instance
-
-		mProgram = program; 
-        mMVPMatricesHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix");
-		batch = new SpriteBatch(CHAR_BATCH_SIZE, mMVPMatricesHandle );  // Create Sprite Batch (with Defined Size)
+		
+		batch = new SpriteBatch(CHAR_BATCH_SIZE, program );  // Create Sprite Batch (with Defined Size)
 
 		charWidths = new float[CHAR_CNT];               // Create the Array of Character Widths
 		charRgn = new TextureRegion[CHAR_CNT];          // Create the Array of Character Regions
@@ -104,14 +98,9 @@ public class GLText {
 		scaleY = 1.0f;                                  // Default Scale = 1 (Unscaled)
 		spaceX = 0.0f;
 
-		if (GLES20.glIsProgram(mProgram.getHandle())) {
-			Log.v(TAG, "mProgram is valid");
-			Log.v(TAG, GLES20.glGetProgramInfoLog(mProgram.getHandle()));
-		}
-		else Log.v(TAG, "mProgram is invalid");
+		// Initialize the color and texture handles
+		mProgram = program; 
 		mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
-//		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Cjolor");
-		//mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_MVPMatrix");
         mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Texture");
 
 	}
@@ -212,26 +201,7 @@ public class GLText {
 		s[0] = CHAR_NONE;                               // Set Character to Use for NONE
 		canvas.drawText( s, 0, 1, x, y, paint );        // Draw Character
 
-		//      // generate a new texture
-		//      int[] textureIds = new int[1];                  // Array to Get Texture Id
-		//      gl.glGenTextures( 1, textureIds, 0 );           // Generate New Texture
-		//      textureId = textureIds[0];                      // Save Texture Id
-		//
-		//      // setup filters for texture
-		//      gl.glBindTexture( GL10.GL_TEXTURE_2D, textureId );  // Bind Texture
-		//      gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST );  // Set Minification Filter
-		//      gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR );  // Set Magnification Filter
-		//      gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_S, GL10.GL_CLAMP_TO_EDGE );  // Set U Wrapping
-		//      gl.glTexParameterf( GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_WRAP_T, GL10.GL_CLAMP_TO_EDGE );  // Set V Wrapping
-		//
-		//      // load the generated bitmap onto the texture
-		//      GLUtils.texImage2D( GL10.GL_TEXTURE_2D, 0, bitmap, 0 );  // Load Bitmap to Texture
-		//      gl.glBindTexture( GL10.GL_TEXTURE_2D, 0 );      // Unbind Texture
-		//
-		//      // release the bitmap
-		//      bitmap.recycle();                               // Release the Bitmap
-
-		// save the bitmap in a texture with textureId
+		// save the bitmap in a texture
 		textureId = TextureHelper.loadTexture(bitmap);
 
 		// setup the array of character texture regions
@@ -269,32 +239,18 @@ public class GLText {
 		//      gl.glColor4f( red, green, blue, alpha );        // Set Color+Alpha
 		//      gl.glBindTexture( GL10.GL_TEXTURE_2D, textureId );  // Bind the Texture
 		//      
-//		mVPMatrix = vpMatrix;
 		GLES20.glUseProgram(mProgram.getHandle());
-//		if (GLES20.glIsProgram(mProgram.getHandle())) {
-//			Log.v(TAG, "mProgram is valid");
-//			Log.v(TAG, GLES20.glGetProgramInfoLog(mProgram.getHandle()));
-//		}
-//		else Log.v(TAG, "mProgram is invalid");
-//		Log.v(TAG, "useProgram - " + GLES20.glGetError());
 		// set color
 		float[] color = {red, green, blue, alpha};
 		GLES20.glUniform4fv(mColorHandle, 1, color , 0);
-//		Log.v(TAG, "glUniform4fv(colorhandle) - " + GLES20.glGetError());
 		GLES20.glEnableVertexAttribArray(mColorHandle);
-//		Log.v(TAG, "enableColorAttribArray - " + GLES20.glGetError());
 		// bind the texture
 		// Set the active texture unit to texture unit 0.
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);  
-//		Log.v(TAG, "activeTexture - " + GLES20.glGetError());
 		// Bind the texture to this unit.
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-//		Log.v(TAG, "bingTexture - " + GLES20.glGetError());
 		// Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
 		GLES20.glUniform1i(mTextureUniformHandle, 0); 
-//		Log.v(TAG, "uniformli - " + GLES20.glGetError());
-
-		// TODO: set uniform MVPMatrix!
 
 		batch.beginBatch(vpMatrix);                             // Begin Batch
 	}
@@ -447,16 +403,16 @@ public class GLText {
 	// D: draw the entire font texture (NOTE: for testing purposes only)
 	// A: width, height - the width and height of the area to draw to. this is used
 	//    to draw the texture to the top-left corner.
-//	public void drawTexture(int width, int height, float[] mMVPMatrix)  {
-//		GLES20.glUseProgram(mProgram.getHandle());
-////		Log.v(TAG, "useProgram in drawTexture - " + GLES20.glGetError());
-//
-//		batch.beginBatch( textureId, mTextureUniformHandle);                  // Begin Batch (Bind Texture)
-////		batch.beginBatch();
-//		batch.drawSprite( textureSize / 2, height - ( textureSize / 2 ), textureSize, textureSize, textureRgn );  // Draw
-//		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-//		batch.endBatch();                               // End Batch
-//	}
+	public void drawTexture(int width, int height, float[] vpMatrix)  {
+		GLES20.glUseProgram(mProgram.getHandle());
+
+		batch.beginBatch( textureId, mTextureUniformHandle, vpMatrix);                  // Begin Batch (Bind Texture)
+		float[] idMatrix = new float[16];
+		Matrix.setIdentityM(idMatrix, 0);
+		batch.drawSprite( textureSize / 2, height - ( textureSize / 2 ), textureSize, textureSize, textureRgn, idMatrix);  // Draw
+		//GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+		batch.endBatch();                               // End Batch
+	}
 
 
 }

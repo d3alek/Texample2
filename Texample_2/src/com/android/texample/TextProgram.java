@@ -1,6 +1,5 @@
 package com.android.texample;
 
-import com.android.texample_2.R;
 
 
 public class TextProgram extends Program {
