@@ -202,7 +202,7 @@ public class Vertices {
 		if ( hasTexCoords ) {                             // IF Vertices Have Texture Coords
 			//			gl.glDisableClientState( GL10.GL_TEXTURE_COORD_ARRAY );  // Clear Texture Coords State
 			// unbind texture
-//			GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
+			GLES20.glDisableVertexAttribArray(mTextureCoordinateHandle);
 		}
 
 		if ( hasNormals ) {                               // IF Vertices Have Normals

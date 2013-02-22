@@ -297,6 +297,7 @@ public class GLText {
 	public void end(float[] mMVPMatrix)  {
 		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
 		batch.endBatch();                               // End Batch
+		GLES20.glDisableVertexAttribArray(mColorHandle);
 		//      gl.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );         // Restore Default Color/Alpha
 	}
 

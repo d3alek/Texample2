@@ -34,8 +34,8 @@ public class TextProgram extends Program {
 			
 			+ "void main()                    \n"     // The entry point for our fragment shader.
 			+ "{                              \n"
-			+ "   gl_FragColor = texture2D(u_Texture, v_TexCoordinate);\n"     // Pass the color directly through the pipeline.
-			+ "   gl_FragColor.a *= u_Color.a;\n"
+			+ "   gl_FragColor = u_Color * texture2D(u_Texture, v_TexCoordinate);\n"     // Pass the color directly through the pipeline.
+			//+ "   gl_FragColor.a *= u_Color.a;\n"
 			+ "}                             \n";
 	
 	public TextProgram() {
