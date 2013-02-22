@@ -1,7 +1,7 @@
 package com.android.texample;
 
 import android.opengl.GLES20;
-import android.util.Log;
+import android.opengl.Matrix;
 
 public class SpriteBatch {
 
@@ -100,7 +100,7 @@ public class SpriteBatch {
 	//    width, height - the width and height of the sprite
 	//    region - the texture region to use for sprite
 	// R: [none]
-	public void drawSprite(float x, float y, float width, float height, TextureRegion region)  {
+	public void drawSprite(float x, float y, float width, float height, TextureRegion region, float[] modelMatrix)  {
 		if ( numSprites == maxSprites )  {              // IF Sprite Buffer is Full
 			endBatch();                                  // End Batch
 			// NOTE: leave current texture bound!!
@@ -139,9 +139,15 @@ public class SpriteBatch {
 		vertexBuffer[bufferIndex++] = region.v1;        // Add V for Vertex 3
 		vertexBuffer[bufferIndex++] = numSprites;
 
+		
+		float[] mvpMatrix = new float[16];
+		
+		Matrix.multiplyMM(mvpMatrix, 0, mVPMatrix , 0, modelMatrix, 0);
+		
+
 		//TODO: make sure numSprites < 24
 		for (int i = 0; i < 16; ++i) {
-			uMVPMatrices[numSprites*16+i] = mVPMatrix[i];
+			uMVPMatrices[numSprites*16+i] = mvpMatrix[i];
 		}
 		
 		numSprites++;                                   // Increment Sprite Count

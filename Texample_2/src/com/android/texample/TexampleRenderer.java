@@ -82,9 +82,9 @@ public class TexampleRenderer implements GLSurfaceView.Renderer  {
 //
 //		// TEST: render some strings with the font
 		glText.begin( 1.0f, 1.0f, 1.0f, 1.0f, mVPMatrix );         // Begin Text Rendering (Set Color WHITE)
-		glText.draw( "Test String :)", 0, 0 );          // Draw Test String
-//		glText.draw( "Line 1", 50, 50 );                // Draw Test String
-//		glText.draw( "Line 2", 100, 100 );              // Draw Test String
+		glText.drawC( "Test String :)", 0, 0, 10 );          // Draw Test String
+		glText.draw( "Line 1", 50, 50 );                // Draw Test String
+		glText.draw( "Line 2", 100, 100 );              // Draw Test String
 		glText.end();                                   // End Text Rendering
 		
 		glText.begin( 0.0f, 0.0f, 1.0f, 1.0f, mVPMatrix );         // Begin Text Rendering (Set Color BLUE)

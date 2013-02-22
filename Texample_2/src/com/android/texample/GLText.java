@@ -15,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 import com.android.texample_2.R;
 
@@ -309,19 +310,28 @@ public class GLText {
 	// A: text - the string to draw
 	//    x, y - the x,y position to draw text at (bottom left of text; including descent)
 	// R: [none]
-	public void draw(String text, float x, float y)  {
+	public void draw(String text, float x, float y, float angleDeg)  {
 		float chrHeight = cellHeight * scaleY;          // Calculate Scaled Character Height
 		float chrWidth = cellWidth * scaleX;            // Calculate Scaled Character Width
 		int len = text.length();                        // Get String Length
 		x += ( chrWidth / 2.0f ) - ( fontPadX * scaleX );  // Adjust Start X
 		y += ( chrHeight / 2.0f ) - ( fontPadY * scaleY );  // Adjust Start Y
+		float[] modelMatrix = new float[16];
+		Matrix.setIdentityM(modelMatrix, 0);
+		Matrix.translateM(modelMatrix, 0, x, y, 0);
+		Matrix.rotateM(modelMatrix, 0, angleDeg, 0, 0, 1);
+		x = y = 0;
+		//TODO: scale? Matrix.scaleM(modelMatrix, 0, mScale, mScale, 0);
 		for ( int i = 0; i < len; i++ )  {              // FOR Each Character in String
 			int c = (int)text.charAt( i ) - CHAR_START;  // Calculate Character Index (Offset by First Char in Font)
 			if ( c < 0 || c >= CHAR_CNT )                // IF Character Not In Font
 				c = CHAR_UNKNOWN;                         // Set to Unknown Character Index
-			batch.drawSprite( x, y, chrWidth, chrHeight, charRgn[c] );  // Draw the Character
+			batch.drawSprite( x, y, chrWidth, chrHeight, charRgn[c], modelMatrix );  // Draw the Character
 			x += ( charWidths[c] + spaceX ) * scaleX;    // Advance X Position by Scaled Character Width
 		}
+	}
+	public void draw(String text, float x, float y) {
+		draw(text, x, y, 0);
 	}
 
 	//--Draw Text Centered--//
@@ -329,10 +339,14 @@ public class GLText {
 	// A: text - the string to draw
 	//    x, y - the x,y position to draw text at (bottom left of text)
 	// R: the total width of the text that was drawn
-	public float drawC(String text, float x, float y)  {
+	public float drawC(String text, float x, float y, float angleDeg)  {
 		float len = getLength( text );                  // Get Text Length
-		draw( text, x - ( len / 2.0f ), y - ( getCharHeight() / 2.0f ) );  // Draw Text Centered
+		draw( text, x - ( len / 2.0f ), y - ( getCharHeight() / 2.0f ), angleDeg );  // Draw Text Centered
 		return len;                                     // Return Length
+	}
+	public float drawC(String text, float x, float y) {
+		return drawC(text, x, y, 0);
+		
 	}
 	public float drawCX(String text, float x, float y)  {
 		float len = getLength( text );                  // Get Text Length
