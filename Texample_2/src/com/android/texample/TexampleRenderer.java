@@ -38,7 +38,9 @@ public class TexampleRenderer implements GLSurfaceView.Renderer  {
 		sm = new ShaderProgramManager();
 		// Create the GLText
 //		glText = new GLText( sm.getTextProgram(), context.getAssets() );
-		glText = new GLText( sm.getTextProgram(), context.getAssets());
+		//glText = new GLText( sm.getTextProgram(), context.getAssets());
+
+		glText = new GLText(sm.getBatchTextProgram(), context.getAssets());
 
 		// Load the font from file (set size + padding), creates the texture
 		// NOTE: after a successful call to this the font is ready for rendering!
@@ -79,16 +81,16 @@ public class TexampleRenderer implements GLSurfaceView.Renderer  {
 //		glText.drawTexture( 100, 100, mVPMatrix);            // Draw the Entire Texture
 //
 //		// TEST: render some strings with the font
-		glText.begin( 1.0f, 0.0f, 1.0f, 1.0f );         // Begin Text Rendering (Set Color WHITE)
-		glText.drawC( "Test String :)", 0, 0 );          // Draw Test String
-		glText.draw( "Line 1", 50, 50 );                // Draw Test String
-		glText.draw( "Line 2", 100, 100 );              // Draw Test String
-		glText.end(mVPMatrix);                                   // End Text Rendering
+		glText.begin( 1.0f, 1.0f, 1.0f, 1.0f, mVPMatrix );         // Begin Text Rendering (Set Color WHITE)
+		glText.draw( "Test String :)", 0, 0 );          // Draw Test String
+//		glText.draw( "Line 1", 50, 50 );                // Draw Test String
+//		glText.draw( "Line 2", 100, 100 );              // Draw Test String
+		glText.end();                                   // End Text Rendering
 		
-		glText.begin( 0.0f, 0.0f, 1.0f, 1.0f );         // Begin Text Rendering (Set Color BLUE)
+		glText.begin( 0.0f, 0.0f, 1.0f, 1.0f, mVPMatrix );         // Begin Text Rendering (Set Color BLUE)
 		glText.draw( "More Lines...", 50, 150 );        // Draw Test String
 		glText.draw( "The End.", 50, 150 + glText.getCharHeight() );  // Draw Test String
-		glText.end(mVPMatrix);                                   // End Text Rendering
+		glText.end();                                   // End Text Rendering
 
 		float[] shape1color = {1.0f, 0.0f, 0.0f, 0.0f};
 		D3Shape shape = new D3Quad(100f, 100f, sm.getDefaultProgram());

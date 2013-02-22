@@ -37,6 +37,7 @@ public class Vertices {
 	final int[] tmpBuffer;                             // Temp Buffer for Vertex Conversion
 	private int mTextureCoordinateHandle;
 	private int mPositionHandle;
+	private int mMVPIndexHandle;
 
 	//--Constructor--//
 	// D: create the vertices/indices as specified (for 2d/3d)
@@ -57,7 +58,7 @@ public class Vertices {
 		this.hasTexCoords = hasTexCoords;               // Save Texture Coords Flag
 		this.hasNormals = hasNormals;                   // Save Normals Flag
 		this.positionCnt = use3D ? POSITION_CNT_3D : POSITION_CNT_2D;  // Set Position Component Count
-		this.vertexStride = this.positionCnt + ( hasColor ? COLOR_CNT : 0 ) + ( hasTexCoords ? TEXCOORD_CNT : 0 ) + ( hasNormals ? NORMAL_CNT : 0 );  // Calculate Vertex Stride
+		this.vertexStride = this.positionCnt + ( hasColor ? COLOR_CNT : 0 ) + ( hasTexCoords ? TEXCOORD_CNT : 0 ) + ( hasNormals ? NORMAL_CNT : 0 ) + 1;  // Calculate Vertex Stride
 		this.vertexSize = this.vertexStride * 4;        // Calculate Vertex Byte Size
 
 		ByteBuffer buffer = ByteBuffer.allocateDirect( maxVertices * vertexSize );  // Allocate Buffer for Vertices (Max)
@@ -78,7 +79,7 @@ public class Vertices {
 		this.tmpBuffer = new int[maxVertices * vertexSize / 4];  // Create Temp Buffer
 
 		mTextureCoordinateHandle = AttribVariable.A_TexCoordinate.getHandle();//GLES20.glGetAttribLocation(mProgram, "a_TexCoordinate");
-		//	     mMVPIndexHandle = AttribVariable.A_MVPMatrixIndex.getHandle();
+		mMVPIndexHandle = AttribVariable.A_MVPMatrixIndex.getHandle();
 		mPositionHandle = AttribVariable.A_Position.getHandle();
 	}
 
@@ -146,7 +147,11 @@ public class Vertices {
 			GLES20.glEnableVertexAttribArray(mTextureCoordinateHandle);
 //			//			gl.glTexCoordPointer( TEXCOORD_CNT, GL10.GL_FLOAT, vertexSize, vertices );  // Set Texture Coords Pointer
 		}
-
+		
+		vertices.position(positionCnt + ( hasColor ? COLOR_CNT : 0) +  (hasTexCoords ? TEXCOORD_CNT : 0));
+		GLES20.glVertexAttribPointer(mMVPIndexHandle, 1, GLES20.GL_FLOAT, false, vertexSize, vertices);
+		GLES20.glEnableVertexAttribArray(mMVPIndexHandle);
+		
 		if ( hasNormals )  {
 			//TODO: bind normals pointer
 			//			gl.glEnableClientState( GL10.GL_NORMAL_ARRAY );  // Enable Normals in Vertices

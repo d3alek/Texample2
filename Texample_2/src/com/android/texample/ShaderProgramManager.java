@@ -1,6 +1,5 @@
 package com.android.texample;
 
-import com.android.texample_2.R;
 
 
 public class ShaderProgramManager {
@@ -23,8 +22,8 @@ public class ShaderProgramManager {
 	}
 
 	public void clear() {
-//		defaultProgram.delete(); textProgram.delete(); batchTextProgram.delete();
-		textProgram.delete(); batchTextProgram.delete();
+		defaultProgram.delete(); textProgram.delete(); batchTextProgram.delete();
+//		textProgram.delete(); batchTextProgram.delete();
 	}
 
 	public Program getTextProgram() {

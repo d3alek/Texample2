@@ -1,6 +1,5 @@
 package com.android.texample;
 
-import com.android.texample_2.R;
 
 
 public class BatchTextProgram extends Program {
@@ -38,13 +37,12 @@ public class BatchTextProgram extends Program {
 			
 			+ "void main()                    \n"     // The entry point for our fragment shader.
 			+ "{                              \n"
-			+ "   gl_FragColor = texture2D(u_Texture, v_TexCoordinate);\n"     // Pass the color directly through the pipeline.
-			+ "   gl_FragColor.a *= u_Color.a;\n"
+			+ "   gl_FragColor = texture2D(u_Texture, v_TexCoordinate) * u_Color;\n"     // Pass the color directly through the pipeline.
 			+ "}                             \n";
 	
 	public BatchTextProgram() {
 //		super(vertexShaderCode, fragmentShaderCode, programVariables);
-		// TODO Auto-generated constructor stub
+//		 TODO Auto-generated constructor stub
 	}
 
 	@Override
