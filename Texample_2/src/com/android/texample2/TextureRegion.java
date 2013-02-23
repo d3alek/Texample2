@@ -1,6 +1,5 @@
-package com.android.texample;
+package com.android.texample2;
 
-import com.android.texample_2.R;
 
 class TextureRegion {
 

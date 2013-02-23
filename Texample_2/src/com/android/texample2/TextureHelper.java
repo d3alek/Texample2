@@ -1,11 +1,10 @@
-package com.android.texample;
+package com.android.texample2;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
-import com.android.texample_2.R;
 
 public class TextureHelper {
 	public static int loadTexture(final Context context, final int resourceId) {

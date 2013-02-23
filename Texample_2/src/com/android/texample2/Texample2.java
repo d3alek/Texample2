@@ -1,7 +1,7 @@
 // This is based on the OpenGL ES 1.0 sample application from the Android Developer website:
 // http://developer.android.com/resources/tutorials/opengl/opengl-es10.html
 
-package com.android.texample;
+package com.android.texample2;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,9 +9,8 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
-import com.android.texample_2.R;
 
-public class Texample extends Activity
+public class Texample2 extends Activity
 {
    private GLSurfaceView glView;
 
@@ -50,6 +49,8 @@ class TexampleSurfaceView extends GLSurfaceView {
 
    public TexampleSurfaceView(Context context){
       super( context );
+      
+      // Set to use OpenGL ES 2.0
       setEGLContextClientVersion(2); 
 
       // Set the Renderer for drawing on the GLSurfaceView

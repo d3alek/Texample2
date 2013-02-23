@@ -1,4 +1,4 @@
-package com.android.texample;
+package com.android.texample2;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -6,7 +6,6 @@ import java.nio.FloatBuffer;
 
 import android.opengl.GLES20;
 import android.util.Log;
-import com.android.texample_2.R;
 
 public class Utilities {
 

@@ -1,7 +1,9 @@
-package com.android.texample;
+package com.android.texample2.programs;
 
 import android.opengl.GLES20;
-import com.android.texample_2.R;
+
+import com.android.texample2.AttribVariable;
+import com.android.texample2.Utilities;
 
 
 public abstract class Program {

@@ -7,7 +7,10 @@
 // origin, and the (x,y) positions are relative to that, as well as the
 // bottom-left of the string to render.
 
-package com.android.texample;
+package com.android.texample2;
+
+import com.android.texample2.programs.BatchTextProgram;
+import com.android.texample2.programs.Program;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -64,10 +67,11 @@ public class GLText {
 
 
 	//--Constructor--//
-	// D: save GL instance + asset manager, create arrays, and initialize the members
-	// A: gl - OpenGL ES 10 Instance
+	// D: save program + asset manager, create arrays, and initialize the members
 	public GLText(Program program, AssetManager assets) {
-		//      this.gl = gl;                                   // Save the GL10 Instance
+		if (program == null) {
+			program = new BatchTextProgram();
+			program.init();		}
 		this.assets = assets;                           // Save the Asset Manager Instance
 		
 		batch = new SpriteBatch(CHAR_BATCH_SIZE, program );  // Create Sprite Batch (with Defined Size)
@@ -102,7 +106,11 @@ public class GLText {
 		mProgram = program; 
 		mColorHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Color");
         mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram.getHandle(), "u_Texture");
-
+	}
+	
+	// Constructor using the default program (BatchTextProgram)
+	public GLText(AssetManager assets) {
+		this(null, assets);
 	}
 
 	//--Load Font--//
@@ -228,6 +236,7 @@ public class GLText {
 	//    NOTE: color is set on a per-batch basis, and fonts should be 8-bit alpha only!!!
 	// A: red, green, blue - RGB values for font (default = 1.0)
 	//    alpha - optional alpha value for font (default = 1.0)
+	// 	  vpMatrix - View and projection matrix to use
 	// R: [none]
 	public void begin(float[] vpMatrix)  {
 		begin( 1.0f, 1.0f, 1.0f, 1.0f, vpMatrix );                // Begin with White Opaque
@@ -236,35 +245,32 @@ public class GLText {
 		begin( 1.0f, 1.0f, 1.0f, alpha, vpMatrix );               // Begin with White (Explicit Alpha)
 	}
 	public void begin(float red, float green, float blue, float alpha, float[] vpMatrix)  {
-		//      gl.glColor4f( red, green, blue, alpha );        // Set Color+Alpha
-		//      gl.glBindTexture( GL10.GL_TEXTURE_2D, textureId );  // Bind the Texture
-		//      
-		GLES20.glUseProgram(mProgram.getHandle());
-		// set color
-		float[] color = {red, green, blue, alpha};
-		GLES20.glUniform4fv(mColorHandle, 1, color , 0);
+		GLES20.glUseProgram(mProgram.getHandle()); // specify the program to use
+		
+		// set color TODO: only alpha component works, text is always black #BUG
+		float[] color = {red, green, blue, alpha}; 
+		GLES20.glUniform4fv(mColorHandle, 1, color , 0); 
 		GLES20.glEnableVertexAttribArray(mColorHandle);
-		// bind the texture
-		// Set the active texture unit to texture unit 0.
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);  
-		// Bind the texture to this unit.
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-		// Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
+		
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);  // Set the active texture unit to texture unit 0
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId); // Bind the texture to this unit
+		
+		// Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0
 		GLES20.glUniform1i(mTextureUniformHandle, 0); 
 
 		batch.beginBatch(vpMatrix);                             // Begin Batch
 	}
 	public void end()  {
-		//GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
 		batch.endBatch();                               // End Batch
 		GLES20.glDisableVertexAttribArray(mColorHandle);
-		//      gl.glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );         // Restore Default Color/Alpha
 	}
 
 	//--Draw Text--//
 	// D: draw text at the specified x,y position
 	// A: text - the string to draw
 	//    x, y - the x,y position to draw text at (bottom left of text; including descent)
+	//    angleDeg - angle to rotate the text
 	// R: [none]
 	public void draw(String text, float x, float y, float angleDeg)  {
 		float chrHeight = cellHeight * scaleY;          // Calculate Scaled Character Height
@@ -272,18 +278,22 @@ public class GLText {
 		int len = text.length();                        // Get String Length
 		x += ( chrWidth / 2.0f ) - ( fontPadX * scaleX );  // Adjust Start X
 		y += ( chrHeight / 2.0f ) - ( fontPadY * scaleY );  // Adjust Start Y
+		
+		// create a model matrix based on x, y and angleDeg
 		float[] modelMatrix = new float[16];
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.translateM(modelMatrix, 0, x, y, 0);
 		Matrix.rotateM(modelMatrix, 0, angleDeg, 0, 0, 1);
-		x = y = 0;
-		//TODO: scale? Matrix.scaleM(modelMatrix, 0, mScale, mScale, 0);
-		for ( int i = 0; i < len; i++ )  {              // FOR Each Character in String
-			int c = (int)text.charAt( i ) - CHAR_START;  // Calculate Character Index (Offset by First Char in Font)
-			if ( c < 0 || c >= CHAR_CNT )                // IF Character Not In Font
+		int letterX, letterY; 
+		letterX = letterY = 0;
+		
+		for (int i = 0; i < len; i++)  {              // FOR Each Character in String
+			int c = (int)text.charAt(i) - CHAR_START;  // Calculate Character Index (Offset by First Char in Font)
+			if (c < 0 || c >= CHAR_CNT)                // IF Character Not In Font
 				c = CHAR_UNKNOWN;                         // Set to Unknown Character Index
-			batch.drawSprite( x, y, chrWidth, chrHeight, charRgn[c], modelMatrix );  // Draw the Character
-			x += ( charWidths[c] + spaceX ) * scaleX;    // Advance X Position by Scaled Character Width
+			//TODO: optimize - applying the same model matrix to all the characters in the string
+			batch.drawSprite(letterX, letterY, chrWidth, chrHeight, charRgn[c], modelMatrix);  // Draw the Character
+			letterX += (charWidths[c] + spaceX ) * scaleX;    // Advance X Position by Scaled Character Width
 		}
 	}
 	public void draw(String text, float x, float y) {
@@ -294,6 +304,7 @@ public class GLText {
 	// D: draw text CENTERED at the specified x,y position
 	// A: text - the string to draw
 	//    x, y - the x,y position to draw text at (bottom left of text)
+	//    angleDeg - angle to rotate the text
 	// R: the total width of the text that was drawn
 	public float drawC(String text, float x, float y, float angleDeg)  {
 		float len = getLength( text );                  // Get Text Length
@@ -403,16 +414,14 @@ public class GLText {
 	// D: draw the entire font texture (NOTE: for testing purposes only)
 	// A: width, height - the width and height of the area to draw to. this is used
 	//    to draw the texture to the top-left corner.
+	//    vpMatrix - View and projection matrix to use
 	public void drawTexture(int width, int height, float[] vpMatrix)  {
 		GLES20.glUseProgram(mProgram.getHandle());
 
 		batch.beginBatch( textureId, mTextureUniformHandle, vpMatrix);                  // Begin Batch (Bind Texture)
 		float[] idMatrix = new float[16];
 		Matrix.setIdentityM(idMatrix, 0);
-		batch.drawSprite( textureSize / 2, height - ( textureSize / 2 ), textureSize, textureSize, textureRgn, idMatrix);  // Draw
-		//GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mMVPMatrix, 0);
+		batch.drawSprite( width - (textureSize / 2), height - ( textureSize / 2 ), textureSize, textureSize, textureRgn, idMatrix);  // Draw
 		batch.endBatch();                               // End Batch
 	}
-
-
 }
