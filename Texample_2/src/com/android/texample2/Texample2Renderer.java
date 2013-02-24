@@ -1,6 +1,3 @@
-// This is based on the OpenGL ES 1.0 sample application from the Android Developer website:
-// http://developer.android.com/resources/tutorials/opengl/opengl-es10.html
-
 package com.android.texample2;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -11,7 +8,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
-public class TexampleRenderer implements GLSurfaceView.Renderer  {
+public class Texample2Renderer implements GLSurfaceView.Renderer  {
 
 	private static final String TAG = "TexampleRenderer";
 	private GLText glText;                             // A GLText Instance
@@ -23,7 +20,7 @@ public class TexampleRenderer implements GLSurfaceView.Renderer  {
 	private float[] mVMatrix = new float[16];
 	private float[] mVPMatrix = new float[16];
 
-	public TexampleRenderer(Context context)  {
+	public Texample2Renderer(Context context)  {
 		super();
 		this.context = context;                         // Save Specified Context
 	}
@@ -54,8 +51,6 @@ public class TexampleRenderer implements GLSurfaceView.Renderer  {
 		
 		// TEST: render the entire font texture
 		glText.drawTexture( width/2, height/2, mVPMatrix);            // Draw the Entire Texture
-		
-		// TODO: RGB values don't work, only transparency, fonts are black
 		
 		// TEST: render some strings with the font
 		glText.begin( 1.0f, 1.0f, 1.0f, 1.0f, mVPMatrix );         // Begin Text Rendering (Set Color WHITE)

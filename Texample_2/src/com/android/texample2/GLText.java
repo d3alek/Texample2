@@ -245,6 +245,11 @@ public class GLText {
 		begin( 1.0f, 1.0f, 1.0f, alpha, vpMatrix );               // Begin with White (Explicit Alpha)
 	}
 	public void begin(float red, float green, float blue, float alpha, float[] vpMatrix)  {
+		initDraw(red, green, blue, alpha);
+		batch.beginBatch(vpMatrix);                             // Begin Batch
+	}
+	
+	void initDraw(float red, float green, float blue, float alpha) {
 		GLES20.glUseProgram(mProgram.getHandle()); // specify the program to use
 		
 		// set color TODO: only alpha component works, text is always black #BUG
@@ -258,9 +263,8 @@ public class GLText {
 		
 		// Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0
 		GLES20.glUniform1i(mTextureUniformHandle, 0); 
-
-		batch.beginBatch(vpMatrix);                             // Begin Batch
 	}
+	
 	public void end()  {
 		batch.endBatch();                               // End Batch
 		GLES20.glDisableVertexAttribArray(mColorHandle);
@@ -416,12 +420,13 @@ public class GLText {
 	//    to draw the texture to the top-left corner.
 	//    vpMatrix - View and projection matrix to use
 	public void drawTexture(int width, int height, float[] vpMatrix)  {
-		GLES20.glUseProgram(mProgram.getHandle());
+		initDraw(1.0f, 1.0f, 1.0f, 1.0f);
 
-		batch.beginBatch( textureId, mTextureUniformHandle, vpMatrix);                  // Begin Batch (Bind Texture)
+		batch.beginBatch(vpMatrix);                  // Begin Batch (Bind Texture)
 		float[] idMatrix = new float[16];
 		Matrix.setIdentityM(idMatrix, 0);
-		batch.drawSprite( width - (textureSize / 2), height - ( textureSize / 2 ), textureSize, textureSize, textureRgn, idMatrix);  // Draw
+		batch.drawSprite(width - (textureSize / 2), height - ( textureSize / 2 ), 
+				textureSize, textureSize, textureRgn, idMatrix);  // Draw
 		batch.endBatch();                               // End Batch
 	}
 }

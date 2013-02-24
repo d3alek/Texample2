@@ -54,6 +54,6 @@ class TexampleSurfaceView extends GLSurfaceView {
       setEGLContextClientVersion(2); 
 
       // Set the Renderer for drawing on the GLSurfaceView
-      setRenderer( new TexampleRenderer( context ) );
+      setRenderer( new Texample2Renderer( context ) );
    }
 }

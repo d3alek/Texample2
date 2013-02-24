@@ -49,30 +49,7 @@ public class SpriteBatch {
 		vertices.setIndices( indices, 0, len );         // Set Index Buffer for Rendering
         mMVPMatricesHandle = GLES20.glGetUniformLocation(program.getHandle(), "u_MVPMatrix");
 	}
-
-	//--Begin Batch--//
-	// D: signal the start of a batch. set the texture and clear buffer
-	//    NOTE: the overloaded (non-texture) version assumes that the texture is already bound!
-	// A: textureId - the ID of the texture to use for the batch
-	//    textureUniformHandle - the shader handle of the texture, used for binding
-	//    vpMatrix - view and projection matrix to use when drawing 
-	// R: [none]
-	public void beginBatch(int textureId, int textureUniformHandle, float[] vpMatrix)  {
-		//      gl.glBindTexture( GL10.GL_TEXTURE_2D, textureId );  // Bind the Texture
-		
-		// bind the texture
-
-//		Log.v(TAG, "when begining batch " + GLES20.glGetError());
-		// Set the active texture unit to texture unit 0.
-		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);  
-		// Bind the texture to this unit.
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
-		// Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
-		GLES20.glUniform1i(textureUniformHandle, 0); 
-//		Log.v(TAG, "when finishing begining batch " + GLES20.glGetError());
-		
-		beginBatch(vpMatrix);
-	}
+	
 	public void beginBatch(float[] vpMatrix)  {
 		numSprites = 0;                                 // Empty Sprite Counter
 		bufferIndex = 0;                                // Reset Buffer Index (Empty)

@@ -37,13 +37,9 @@ public class BatchTextProgram extends Program {
 			
 			+ "void main()                    \n"     // The entry point for our fragment shader.
 			+ "{                              \n"
-			+ "   gl_FragColor = texture2D(u_Texture, v_TexCoordinate) * u_Color;\n"     // Pass the color directly through the pipeline.
+			+ "   gl_FragColor = texture2D(u_Texture, v_TexCoordinate).w * u_Color;\n" // texture is grayscale so take only grayscale value from  
+																					   // it when computing color output (otherwise font is always black)
 			+ "}                             \n";
-	
-	public BatchTextProgram() {
-//		super(vertexShaderCode, fragmentShaderCode, programVariables);
-//		 TODO Auto-generated constructor stub
-	}
 
 	@Override
 	public void init() {
