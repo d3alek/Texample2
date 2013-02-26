@@ -18,3 +18,6 @@ See it in action
 ----------------
 [TheHunt - Interactive graphical platform for AI experiments]  (http://d3kod.github.com/TheHunt---Interactive-graphical-platform-for-AI-Experiments/)
 
+More information
+---------------
+I made a blog post with a bit more information about the implementation steps I took to port the code - [Rendering Text in OpenGL 2.0 ES on Android](http://primalpond.wordpress.com/2013/02/26/rendering-text-in-opengl-2-0-es-on-android/)
