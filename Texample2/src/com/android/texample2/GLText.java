@@ -9,9 +9,6 @@
 
 package com.android.texample2;
 
-import com.android.texample2.programs.BatchTextProgram;
-import com.android.texample2.programs.Program;
-
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -19,6 +16,9 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
+
+import com.android.texample2.programs.BatchTextProgram;
+import com.android.texample2.programs.Program;
 
 public class GLText {
 
@@ -61,9 +61,10 @@ public class GLText {
 
 	float scaleX, scaleY;                              // Font Scale (X,Y Axis)
 	float spaceX;                                      // Additional (X,Y Axis) Spacing (Unscaled)
-	private int mColorHandle;
-	private Program mProgram;
-	private int mTextureUniformHandle;
+	
+	private Program mProgram; 						   // OpenGL Program object
+	private int mColorHandle;						   // Shader color handle	
+	private int mTextureUniformHandle;                 // Shader texture handle
 
 
 	//--Constructor--//
@@ -71,7 +72,8 @@ public class GLText {
 	public GLText(Program program, AssetManager assets) {
 		if (program == null) {
 			program = new BatchTextProgram();
-			program.init();		}
+			program.init();
+		}
 		this.assets = assets;                           // Save the Asset Manager Instance
 		
 		batch = new SpriteBatch(CHAR_BATCH_SIZE, program );  // Create Sprite Batch (with Defined Size)
@@ -288,7 +290,8 @@ public class GLText {
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.translateM(modelMatrix, 0, x, y, 0);
 		Matrix.rotateM(modelMatrix, 0, angleDeg, 0, 0, 1);
-		int letterX, letterY; 
+		
+		float letterX, letterY; 
 		letterX = letterY = 0;
 		
 		for (int i = 0; i < len; i++)  {              // FOR Each Character in String
