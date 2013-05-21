@@ -319,7 +319,8 @@ public class GLText {
 		return len;                                     // Return Length
 	}
 	public float drawC(String text, float x, float y) {
-		return drawC(text, x, y, 0);
+		float len = getLength( text );                  // Get Text Length
+		return drawC(text, x - (len / 2.0f), y - ( getCharHeight() / 2.0f ), 0);
 		
 	}
 	public float drawCX(String text, float x, float y)  {
