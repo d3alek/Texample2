@@ -278,7 +278,7 @@ public class GLText {
 	//    x, y, z - the x, y, z position to draw text at (bottom left of text; including descent)
 	//    angleDeg - angle to rotate the text
 	// R: [none]
-	public void draw(String text, float x, float y, float z, float angleDegZ)  {
+	public void draw(String text, float x, float y, float z, float angleDegX, float angleDegY, float angleDegZ)  {
 		float chrHeight = cellHeight * scaleY;          // Calculate Scaled Character Height
 		float chrWidth = cellWidth * scaleX;            // Calculate Scaled Character Width
 		int len = text.length();                        // Get String Length
@@ -290,6 +290,8 @@ public class GLText {
 		Matrix.setIdentityM(modelMatrix, 0);
 		Matrix.translateM(modelMatrix, 0, x, y, z);
 		Matrix.rotateM(modelMatrix, 0, angleDegZ, 0, 0, 1);
+		Matrix.rotateM(modelMatrix, 0, angleDegX, 1, 0, 0);
+		Matrix.rotateM(modelMatrix, 0, angleDegY, 0, 1, 0);
 		
 		float letterX, letterY; 
 		letterX = letterY = 0;
@@ -302,6 +304,9 @@ public class GLText {
 			batch.drawSprite(letterX, letterY, chrWidth, chrHeight, charRgn[c], modelMatrix);  // Draw the Character
 			letterX += (charWidths[c] + spaceX ) * scaleX;    // Advance X Position by Scaled Character Width
 		}
+	}
+	public void draw(String text, float x, float y, float z, float angleDegZ) {
+		draw(text, x, y, z, 0, 0, angleDegZ);
 	}
 	public void draw(String text, float x, float y, float angleDeg) {
 		draw(text, x, y, 0, angleDeg);
@@ -317,10 +322,13 @@ public class GLText {
 	//    x, y, z - the x, y, z position to draw text at (bottom left of text)
 	//    angleDeg - angle to rotate the text
 	// R: the total width of the text that was drawn
-	public float drawC(String text, float x, float y, float z, float angleDeg)  {
+	public float drawC(String text, float x, float y, float z, float angleDegX, float angleDegY, float angleDegZ)  {
 		float len = getLength( text );                  // Get Text Length
-		draw( text, x - ( len / 2.0f ), y - ( getCharHeight() / 2.0f ), z, angleDeg );  // Draw Text Centered
+		draw( text, x - ( len / 2.0f ), y - ( getCharHeight() / 2.0f ), z, angleDegX, angleDegY, angleDegZ );  // Draw Text Centered
 		return len;                                     // Return Length
+	}
+	public float drawC(String text, float x, float y, float z, float angleDegZ) {
+		return drawC(text, x, y, z, 0, 0, angleDegZ);
 	}
 	public float drawC(String text, float x, float y, float angleDeg) {
 		return drawC(text, x, y, 0, angleDeg);
